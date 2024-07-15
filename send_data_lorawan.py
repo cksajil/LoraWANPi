@@ -75,12 +75,14 @@ lora = TinyLoRa(spi, cs, irq, rst, ttn_config, 0)
 lora.set_datarate("SF12BW125")
 # 2-byte array to store sensor data
 data_pkt = bytearray(2)
-# time to delay periodic packet sends (in seconds)
+# Time to delay periodic packet sends (in seconds)
 data_pkt_delay = 5.0
 
 
 def send_pi_data_periodic():
-    send_pi_data(3.14)
+    while True:
+        send_pi_data(3.14)
+        time.sleep(data_pkt_delay)
 
 
 def send_pi_data(data, ch_first=0, ch_last=7):
