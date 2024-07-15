@@ -76,7 +76,7 @@ lora.set_datarate("SF12BW125")
 # 2-byte array to store sensor data
 data_pkt = bytearray(2)
 # Time to delay periodic packet sends (in seconds)
-data_pkt_delay = 5.0
+data_pkt_delay = 10.0
 
 
 def send_pi_data_periodic():
@@ -108,7 +108,6 @@ def send_pi_data(data, ch_first=0, ch_last=7):
     print("Data sent!")
     print(f"Counter: {lora.frame_counter}")
     # print(f"Frequency: {freq} Hz")
-    time.sleep(0.5)
 
 
 send_pi_data_periodic()
