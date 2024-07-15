@@ -49,9 +49,8 @@ static const u1_t Nwkskey[16] = {0x68, 0x9F, 0xAE, 0x57, 0xCF, 0x18, 0xF8, 0x1B,
 
 // LoRaWAN AppSKey, application session key
 static const u1_t Appskey[16] = {0xE8, 0x94, 0xF7, 0x6F, 0xCF, 0xBE, 0xEC, 0xB1, 0x99, 0x83, 0x3C, 0x06, 0x1A, 0x7A, 0x54, 0x21};
-
 // Schedule TX every this many seconds (might become longer due to duty cycle limitations).
-int TX_INTERVAL = 5;
+int TX_INTERVAL = 3;
 
 // Convert u4_t in u1_t(array)
 #define msbf4_read(p) (u4_t)((u4_t)(p)[0] << 24 | (u4_t)(p)[1] << 16 | (p)[2] << 8 | (p)[3])
@@ -101,11 +100,11 @@ void onEvent(ev_t ev)
     {
 
       fprintf(stdout, "RSSI: ");
-      fprintf(stdout, "%d", LMIC.rssi - 96);
+      fprintf(stdout, "%ld", LMIC.rssi - 96);
       fprintf(stdout, " dBm\n");
 
       fprintf(stdout, "SNR: ");
-      fprintf(stdout, "%f", LMIC.snr * 0.25);
+      fprintf(stdout, "%ld", LMIC.snr * 0.25);
       fprintf(stdout, " dB\n");
 
       fprintf(stdout, "Data Received!\n");
@@ -126,6 +125,12 @@ static void do_send(osjob_t *j)
 {
   time_t t = time(NULL);
   fprintf(stdout, "[%x] (%ld) %s\n", hal_ticks(), t, ctime(&t));
+
+  // Blink LED to indicate transmission start
+  digitalWrite(STATUS_PIN_LED, HIGH);
+  delay(100); // Adjust delay as needed for visibility
+  digitalWrite(STATUS_PIN_LED, LOW);
+
   // Show TX channel (channel numbers are local to LMIC)
   // Check if there is not a current TX/RX job running
   if (LMIC.opmode & OP_TXRXPEND)
@@ -146,20 +151,26 @@ static void do_send(osjob_t *j)
     mydata[i] = '\0';
     LMIC_setTxData2(1, mydata, strlen(buf), 0);
   }
+
   // Schedule a timed job to run at the given timestamp (absolute system time)
   os_setTimedCallback(j, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
+
+  // Blink LED to indicate end of transmission attempt
+  digitalWrite(STATUS_PIN_LED, HIGH);
+  delay(100); // Adjust delay as needed for visibility
+  digitalWrite(STATUS_PIN_LED, LOW);
 }
 
-/*
-PI_THREAD (blinkRun)
+PI_THREAD(blinkRun)
 {
   while (1)
   {
-    if ((millis() % 3000) < 250) digitalWrite(STATUS_PIN_LED, HIGH);
-    else digitalWrite(STATUS_PIN_LED, LOW);
+    if ((millis() % 3000) < 250)
+      digitalWrite(STATUS_PIN_LED, HIGH);
+    else
+      digitalWrite(STATUS_PIN_LED, LOW);
   }
 }
-*/
 
 void setup()
 {
@@ -187,14 +198,13 @@ void setup()
    // This means only channels 8-15 are up
  */
 
-  // Single channel AU915 (CH0)
-  // First, disable channels 0-7
+  // Disable all channels (0-72) initially
+  for (int channel = 0; channel < 72; ++channel)
+    LMIC_disableChannel(channel);
+
+  // Enable channels 0-7 for uplink (transmit)
   for (int channel = 0; channel < 8; ++channel)
-    LMIC_disableChannel(channel);
-  // Now, disable channels 9-72 (is there 72 ??)
-  for (int channel = 9; channel < 72; ++channel)
-    LMIC_disableChannel(channel);
-  // This means only channel 8 are up (activate channel 0 AU915)
+    LMIC_enableChannel(channel);
 
   // Disable data rate adaptation
   LMIC_setAdrMode(0);
@@ -251,4 +261,3 @@ function Decoder(bytes, port)
 
   return {payload: result};
 }
-*/
