@@ -72,7 +72,7 @@ ttn_config = TTN(devaddr, nwkey, app, country="IN")
 lora = TinyLoRa(spi, cs, irq, rst, ttn_config, 0)
 # TinyLoRa._tx_random = 15
 # Select spreading factor
-lora.set_datarate("SF10BW125")
+lora.set_datarate("SF12BW125")
 # 2b array to store sensor data
 data_pkt = bytearray(2)
 # time to delay periodic packet sends (in seconds)
