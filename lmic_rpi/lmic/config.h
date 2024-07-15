@@ -3,8 +3,8 @@
 
 #define CFG_sx1276_radio 1
 
-#define CFG_in865 1
-// #define CFG_eu868 1
+// #define CFG_in865 1
+#define CFG_eu868 1
 // #define CFG_us915 1
 // #define CFG_au915 1
 
