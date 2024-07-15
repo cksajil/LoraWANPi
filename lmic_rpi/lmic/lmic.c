@@ -1226,14 +1226,13 @@ static int decodeBeacon(void)
 {
     ASSERT(LMIC.dataLen == LEN_BCN); // implicit header RX guarantees this
     xref2u1_t d = LMIC.frame;
-    if (
 #if CFG_eu868
-        d[OFF_BCN_CRC1] != (u1_t)os_crc16(d, OFF_BCN_CRC1)
+    d[OFF_BCN_CRC1] != (u1_t)os_crc16(d, OFF_BCN_CRC1)
 #elif CFG_us915
-        os_rlsbf2(&d[OFF_BCN_CRC1]) != os_crc16(d, OFF_BCN_CRC1)
+    os_rlsbf2(&d[OFF_BCN_CRC1]) != os_crc16(d, OFF_BCN_CRC1)
 #endif
-    )
-        return 0; // first (common) part fails CRC check
+
+                           return 0; // first (common) part fails CRC check
     // First set of fields is ok
     u4_t bcnnetid = os_rlsbf4(&d[OFF_BCN_NETID]) & 0xFFFFFF;
     if (bcnnetid != LMIC.netid)
