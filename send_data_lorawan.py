@@ -80,7 +80,7 @@ data_pkt_delay = 5.0
 
 
 def send_pi_data_periodic():
-    send_pi_data("hello edge analytics")
+    send_pi_data(3.14)
 
 
 def send_pi_data(data, ch_first=0, ch_last=7):
