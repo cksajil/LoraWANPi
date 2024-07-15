@@ -102,14 +102,10 @@ def send_pi_data(data, ch_first=0, ch_last=7):
 
     # Retrieve debug information
     freq = lora._frequencies
-    rssi = lora.rssi
-    snr = lora.snr
 
     print("Data sent!")
     print(f"Counter: {lora.frame_counter}")
     print(f"Frequency: {freq} Hz")
-    print(f"RSSI: {rssi} dBm")
-    print(f"SNR: {snr} dB")
     time.sleep(0.5)
 
 
