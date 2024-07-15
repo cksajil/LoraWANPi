@@ -198,13 +198,11 @@ void setup()
    // This means only channels 8-15 are up
  */
 
-  // Disable all channels (0-72) initially
-  for (int channel = 0; channel < 72; ++channel)
+  // Multi channel IN865 (CH0-CH7)
+  // First, disable channels 8-72
+  for (int channel = 8; channel < 72; ++channel)
     LMIC_disableChannel(channel);
-
-  // Enable channels 0-7 for uplink (transmit)
-  for (int channel = 0; channel < 8; ++channel)
-    LMIC_enableChannel(channel);
+  // This means only channels 0-7 are up
 
   // Disable data rate adaptation
   LMIC_setAdrMode(0);
