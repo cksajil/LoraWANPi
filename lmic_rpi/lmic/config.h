@@ -5,8 +5,8 @@
 
 // #define CFG_in865 1
 // #define CFG_eu868 1
-#define CFG_us915 1
-// #define CFG_au915 1
+// #define CFG_us915 1
+#define CFG_au915 1
 
 #define US_PER_OSTICK 50
 // #define  OSTICKS_PER_SEC 20000
