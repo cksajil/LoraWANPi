@@ -24,7 +24,7 @@ $ cd wiringPi
 # Build the library
 $ ./build 
 ```
-## Installing the library [LoraWANPi](https://github.com/lucasmaziero/lmic-rpi-fox.git) 
+## Compile [LoraWANPi](https://github.com/lucasmaziero/lmic-rpi-fox.git) 
 
 ```bash
 # Clone the repository 
