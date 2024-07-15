@@ -5,11 +5,9 @@ Learn Guide: https://learn.adafruit.com/lora-and-lorawan-for-raspberry-pi
 Author: Lucas Maziero for Fox IoT (lucasmaziero@foxiot.com.br) (Adapted)
 """
 
-import threading
 import time
-import subprocess
 import busio
-from digitalio import DigitalInOut, Direction, Pull
+from digitalio import DigitalInOut
 from random import randint
 import board
 
@@ -46,6 +44,7 @@ nwkey = bytearray(
     ]
 )
 
+# TTN Application Key, 16 Bytes, MSB
 app = bytearray(
     [
         0xE8,
@@ -66,43 +65,52 @@ app = bytearray(
         0x21,
     ]
 )
+
 # Initialize ThingsNetwork configuration
 ttn_config = TTN(devaddr, nwkey, app, country="IN")
 # Initialize lora object
 lora = TinyLoRa(spi, cs, irq, rst, ttn_config, 0)
-# TinyLoRa._tx_random = 15
+
 # Select spreading factor
 lora.set_datarate("SF12BW125")
-# 2b array to store sensor data
+# 2-byte array to store sensor data
 data_pkt = bytearray(2)
 # time to delay periodic packet sends (in seconds)
-data_pkt_delay = 3.0
+data_pkt_delay = 5.0
 
 
 def send_pi_data_periodic():
-    threading.Timer(data_pkt_delay, send_pi_data_periodic).start()
-    print("Sending periodic data...")
-    # read the raspberry pi cpu load
-    cmd = "top -bn1 | grep load | awk '{printf \"%.1f\", $(NF-2)}'"
-    CPU = subprocess.check_output(cmd, shell=True)
-    CPU = float(CPU)
-    send_pi_data(CPU)
+    send_pi_data("hello edge analytics")
 
 
 def send_pi_data(data, ch_first=0, ch_last=7):
-
     # Encode float as int
     data = int(data * 100)
     # Encode payload as bytes
     data_pkt[0] = (data >> 8) & 0xFF
     data_pkt[1] = data & 0xFF
+    # Select random channel
+    channel = randint(ch_first, ch_last)
+    lora.set_channel(channel)
+
+    print(f"Sending data on channel: {channel}")
+    print(f"Data to send: {data_pkt}")
+
     # Send data packet
-    lora.set_channel(randint(ch_first, ch_last))
     lora.send_data(data_pkt, len(data_pkt), lora.frame_counter, timeout=5)
     lora.frame_counter += 1
+
+    # Retrieve debug information
+    freq = lora.frequency
+    rssi = lora.rssi
+    snr = lora.snr
+
     print("Data sent!")
-    print("Counter: ", lora.frame_counter)
-    # time.sleep(0.5)
+    print(f"Counter: {lora.frame_counter}")
+    print(f"Frequency: {freq} Hz")
+    print(f"RSSI: {rssi} dBm")
+    print(f"SNR: {snr} dB")
+    time.sleep(0.5)
 
 
 send_pi_data_periodic()
