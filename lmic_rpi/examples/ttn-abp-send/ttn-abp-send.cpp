@@ -51,7 +51,7 @@ static const u1_t Nwkskey[16] = {0x68, 0x9F, 0xAE, 0x57, 0xCF, 0x18, 0xF8, 0x1B,
 static const u1_t Appskey[16] = {0xE8, 0x94, 0xF7, 0x6F, 0xCF, 0xBE, 0xEC, 0xB1, 0x99, 0x83, 0x3C, 0x06, 0x1A, 0x7A, 0x54, 0x21};
 
 // Schedule TX every this many seconds (might become longer due to duty cycle limitations).
-int TX_INTERVAL = 30;
+int TX_INTERVAL = 5;
 
 // Convert u4_t in u1_t(array)
 #define msbf4_read(p) (u4_t)((u4_t)(p)[0] << 24 | (u4_t)(p)[1] << 16 | (p)[2] << 8 | (p)[3])
