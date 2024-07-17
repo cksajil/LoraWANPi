@@ -81,25 +81,25 @@ data_pkt_delay = 10.0
 
 def send_pi_data_periodic():
     while True:
-        send_pi_data("ICFOSS")
+        send_pi_data(3.14)
         time.sleep(data_pkt_delay)
 
 
 def send_pi_data(data, ch_first=0, ch_last=7):
     # Encode float as int
-    # data = int(data * 100)
+    data = int(data * 100)
     # Encode payload as bytes
-    # data_pkt[0] = (data >> 8) & 0xFF
-    # data_pkt[1] = data & 0xFF
+    data_pkt[0] = (data >> 8) & 0xFF
+    data_pkt[1] = data & 0xFF
     # Select random channel
     channel = randint(ch_first, ch_last)
     lora.set_channel(channel)
 
     print(f"Sending data on channel: {channel}")
-    print(f"Data to send: {data}")
+    print(f"Data to send: {data_pkt}")
 
     # Send data packet
-    lora.send_data(data, len(data), lora.frame_counter, timeout=30)
+    lora.send_data(data_pkt, len(data_pkt), lora.frame_counter, timeout=3)
     lora.frame_counter += 1
 
     # Retrieve debug information
