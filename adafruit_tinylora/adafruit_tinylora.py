@@ -65,6 +65,7 @@ _TRANSMIT_DIRECTION_UP = const(0x00)
 _REG_PA_CONFIG = const(0x09)
 _REG_PREAMBLE_MSB = const(0x20)
 _REG_PREAMBLE_LSB = const(0x21)
+##
 _REG_FRF_MSB = const(0x06)
 _REG_FRF_MID = const(0x07)
 _REG_FRF_LSB = const(0x08)
@@ -76,11 +77,13 @@ _REG_FIFO_POINTER = const(0x0D)
 _REG_FIFO_BASE_ADDR = const(0x80)
 _REG_OPERATING_MODE = const(0x01)
 _REG_VERSION = const(0x42)
+##
 _REG_PREAMBLE_DETECT = const(0x1F)
 _REG_TIMER1_COEF = const(0x39)
 _REG_NODE_ADDR = const(0x33)
 _REG_IMAGE_CAL = const(0x3B)
 _REG_RSSI_CONFIG = const(0x0E)
+##
 _REG_RSSI_COLLISION = const(0x0F)
 _REG_DIO_MAPPING_1 = const(0x40)
 
