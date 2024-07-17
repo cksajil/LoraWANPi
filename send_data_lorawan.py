@@ -82,15 +82,15 @@ lora.set_datarate("SF12BW125")
 # 2-byte array to store sensor data
 data_pkt = bytearray(2)
 # Time to delay periodic packet sends (in seconds)
-data_pkt_delay = 10.0
+data_pkt_delay = 3.0
 
 
 def send_pi_data_periodic():
     while True:
-        led1.value = True  # Turn on LED 1 when device is active
+        # led1.value = True  # Turn on LED 1 when device is active
         send_pi_data(1)
         time.sleep(data_pkt_delay)
-        led1.value = False  # Turn off LED 1 when not sending data
+        # led1.value = False  # Turn off LED 1 when not sending data
 
 
 def send_pi_data(data, ch_first=0, ch_last=2):
