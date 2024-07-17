@@ -7,7 +7,7 @@ Author: Lucas Maziero for Fox IoT (lucasmaziero@foxiot.com.br) (Adapted)
 
 import time
 import busio
-from digitalio import DigitalInOut
+from digitalio import DigitalInOut, Direction
 from random import randint
 import board
 
@@ -19,6 +19,12 @@ spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 cs = DigitalInOut(board.D25)
 irq = DigitalInOut(board.D23)
 rst = DigitalInOut(board.D17)
+
+# Configure LEDs
+led1 = DigitalInOut(board.D27)
+led1.direction = Direction.OUTPUT
+led2 = DigitalInOut(board.D22)
+led2.direction = Direction.OUTPUT
 
 # TTN Device Address, 4 Bytes, MSB
 devaddr = bytearray([0xFC, 0x00, 0x96, 0xCC])
@@ -81,8 +87,10 @@ data_pkt_delay = 10.0
 
 def send_pi_data_periodic():
     while True:
+        led1.value = True  # Turn on LED 1 when device is active
         send_pi_data(1)
         time.sleep(data_pkt_delay)
+        led1.value = False  # Turn off LED 1 when not sending data
 
 
 def send_pi_data(data, ch_first=0, ch_last=2):
@@ -98,9 +106,13 @@ def send_pi_data(data, ch_first=0, ch_last=2):
     print(f"Sending data on channel: {channel}")
     print(f"Data to send: {data_pkt}")
 
+    led2.value = True  # Turn on LED 2 when data is being transmitted
+
     # Send data packet
     lora.send_data(data_pkt, len(data_pkt), lora.frame_counter, timeout=8)
     lora.frame_counter += 1
+
+    led2.value = False  # Turn off LED 2 after data is sent
 
     # Retrieve debug information
     # freq = lora._frequencies
@@ -111,5 +123,3 @@ def send_pi_data(data, ch_first=0, ch_last=2):
 
 
 send_pi_data_periodic()
-
-# Receiving in gateway
