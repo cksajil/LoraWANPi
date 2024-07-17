@@ -89,8 +89,8 @@ def send_pi_data(data, ch_first=0, ch_last=7):
     # Encode float as int
     # data = int(data * 100)
     # Encode payload as bytes
-    data_pkt[0] = (data >> 8) & 0xFF
-    data_pkt[1] = data & 0xFF
+    # data_pkt[0] = (data >> 8) & 0xFF
+    # data_pkt[1] = data & 0xFF
     # Select random channel
     channel = randint(ch_first, ch_last)
     lora.set_channel(channel)
