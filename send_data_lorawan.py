@@ -111,3 +111,5 @@ def send_pi_data(data, ch_first=0, ch_last=7):
 
 
 send_pi_data_periodic()
+
+# Receiving in gateway
