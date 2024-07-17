@@ -186,7 +186,7 @@ class TinyLoRa:
         self._sf: Optional[registeraddress] = None
         self._bw: Optional[registeraddress] = None
         self._modemcfg: Optional[registeraddress] = None
-        self.set_datarate("SF7BW125")
+        self.set_datarate("SF12BW125")
         # Set regional frequency plan
         # pylint: disable=import-outside-toplevel
         if "US" in ttn_config.country:
