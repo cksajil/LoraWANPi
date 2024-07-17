@@ -67,7 +67,7 @@ app = bytearray(
 )
 
 # Initialize ThingsNetwork configuration
-ttn_config = TTN(devaddr, nwkey, app, country="AS")
+ttn_config = TTN(devaddr, nwkey, app, country="IN")
 # Initialize lora object
 lora = TinyLoRa(spi, cs, irq, rst, ttn_config, 0)
 
