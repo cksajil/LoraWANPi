@@ -370,7 +370,6 @@ class TinyLoRa:
         # TODO: Convert these to enum
         data_rates = {
             "SF7BW125": (0x74, 0x72, 0x04),
-            "SF7BW250": (0x74, 0x82, 0x04),
             "SF8BW125": (0x84, 0x72, 0x04),
             "SF9BW125": (0x94, 0x72, 0x04),
             "SF10BW125": (0xA4, 0x72, 0x04),
