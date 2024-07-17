@@ -99,7 +99,7 @@ def send_pi_data(data, ch_first=0, ch_last=7):
     print(f"Data to send: {data_pkt}")
 
     # Send data packet
-    lora.send_data(data_pkt, len(data_pkt), lora.frame_counter, timeout=3)
+    lora.send_data(data_pkt, len(data_pkt), lora.frame_counter, timeout=8)
     lora.frame_counter += 1
 
     # Retrieve debug information
