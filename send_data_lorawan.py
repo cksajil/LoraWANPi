@@ -1,10 +1,3 @@
-"""
-Example for using the Shield Fox LoRa with Raspberry Pi and LoRaWAN
- 
-Learn Guide: https://learn.adafruit.com/lora-and-lorawan-for-raspberry-pi
-Author: Lucas Maziero for Fox IoT (lucasmaziero@foxiot.com.br) (Adapted)
-"""
-
 import time
 import busio
 from digitalio import DigitalInOut, Direction
@@ -86,11 +79,14 @@ data_pkt_delay = 3.0
 
 
 def send_pi_data_periodic():
-    while True:
-        # led1.value = True  # Turn on LED 1 when device is active
-        send_pi_data(1)
-        time.sleep(data_pkt_delay)
-        # led1.value = False  # Turn off LED 1 when not sending data
+    try:
+        while True:
+            # led1.value = True  # Turn on LED 1 when device is active
+            send_pi_data(1)
+            time.sleep(data_pkt_delay)
+            # led1.value = False  # Turn off LED 1 when not sending data
+    except KeyboardInterrupt:
+        print("Periodic data sending interrupted by user")
 
 
 def send_pi_data(data, ch_first=0, ch_last=2):
