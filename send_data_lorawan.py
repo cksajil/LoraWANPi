@@ -81,13 +81,13 @@ data_pkt_delay = 10.0
 
 def send_pi_data_periodic():
     while True:
-        send_pi_data(3.14)
+        send_pi_data(1)
         time.sleep(data_pkt_delay)
 
 
 def send_pi_data(data, ch_first=0, ch_last=7):
     # Encode float as int
-    data = int(data * 100)
+    data = int(data)
     # Encode payload as bytes
     data_pkt[0] = (data >> 8) & 0xFF
     data_pkt[1] = data & 0xFF
