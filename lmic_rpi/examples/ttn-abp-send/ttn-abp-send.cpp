@@ -5,6 +5,7 @@
 // AUXILIARY LIBRARIES
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <wiringPi.h>
 #include <lmic.h>
@@ -19,66 +20,6 @@
 #define RFM95_PIN_D1 5
 #define STATUS_PIN_LED 2
 #define DATA_SENT_LED 3
-
-// LoRaWAN end-device address (DevAddr)
-static const u1_t DevAddr[4] = {0xFC, 0x00, 0x96, 0xCC};
-
-// LoRaWAN NwkSKey, network session key
-static const u1_t Nwkskey[16] = {
-    0x6A,
-    0x9D,
-    0x80,
-    0x15,
-    0x0E,
-    0x4E,
-    0xD6,
-    0xDA,
-    0xDA,
-    0x2B,
-    0x2C,
-    0xFD,
-    0x82,
-    0x2C,
-    0x63,
-    0x78,
-};
-
-// LoRaWAN AppSKey, application session key
-static const u1_t Appskey[16] = {
-    0x36,
-    0x19,
-    0x82,
-    0x23,
-    0x07,
-    0x29,
-    0x08,
-    0xDA,
-    0x7A,
-    0x6C,
-    0x09,
-    0x77,
-    0x11,
-    0x81,
-    0xA2,
-    0x1C,
-};
-// Schedule TX every this many seconds
-int TX_INTERVAL = 3;
-
-// Convert u4_t in u1_t(array)
-#define msbf4_read(p) (u4_t)((u4_t)(p)[0] << 24 | (u4_t)(p)[1] << 16 | (p)[2] << 8 | (p)[3])
-
-// These callbacks are only used in over-the-air activation, so they are
-// left empty here (we cannot leave them out completely unless
-// DISABLE_JOIN is set in config.h, otherwise the linker will complain.
-void os_getArtEui(u1_t *buf) {}
-
-void os_getDevEui(u1_t *buf) {}
-
-void os_getDevKey(u1_t *buf) {}
-
-u4_t cntr = 0;
-u1_t mydata[25];
 
 static osjob_t sendjob;
 
@@ -137,7 +78,7 @@ void onEvent(ev_t ev)
   }
 }
 
-static void do_send(osjob_t *j)
+static void do_send(osjob_t *j, int value)
 {
   time_t t = time(NULL);
   fprintf(stdout, "[%x] (%ld) %s\n", hal_ticks(), t, ctime(&t));
@@ -153,36 +94,20 @@ static void do_send(osjob_t *j)
   {
     fprintf(stdout, "OP_TXRXPEND, not sending");
   }
-
   else
   {
     // Prepare upstream data transmission at the next possible time.
     unsigned char buf[25];
-    int r = 10;
-    buf[0] = (r >> 8) & 0xFF;
-    buf[1] = r & 0xFF;
+    buf[0] = (value >> 8) & 0xFF;
+    buf[1] = value & 0xFF;
     LMIC_setTxData2(1, buf, 2, 0);
   }
-
-  // Schedule a timed job to run at the given timestamp (absolute system time)
-  os_setTimedCallback(j, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
 
   // Blink LED to indicate end of transmission attempt
   digitalWrite(DATA_SENT_LED, HIGH);
 }
 
-PI_THREAD(blinkRun)
-{
-  while (1)
-  {
-    if ((millis() % 3000) < 250)
-      digitalWrite(STATUS_PIN_LED, HIGH);
-    else
-      digitalWrite(STATUS_PIN_LED, LOW);
-  }
-}
-
-void setup()
+void setup(u1_t *DevAddr, u1_t *Nwkskey, u1_t *Appskey, int value)
 {
   // wiringPi init
   wiringPiSetup();
@@ -195,7 +120,7 @@ void setup()
 
   // Set static session parameters. Instead of dynamically establishing a session
   // by joining the network, precomputed session parameters are be provided.
-  LMIC_setSession(SESSION_PORT, msbf4_read((u1_t *)DevAddr), (u1_t *)Nwkskey, (u1_t *)Appskey);
+  LMIC_setSession(SESSION_PORT, msbf4_read((u1_t *)DevAddr), Nwkskey, Appskey);
 
   // Multi channel IN865 (CH0-CH7)
   // First, disable channels 8-72
@@ -225,25 +150,35 @@ void setup()
   pinMode(STATUS_PIN_LED, OUTPUT);
   pinMode(DATA_SENT_LED, OUTPUT);
 
-  // Add thread
-  // piThreadCreate (blinkRun);
-
-  // Start job
-  do_send(&sendjob);
+  // Send data once
+  do_send(&sendjob, value);
 }
 
-void loop()
+int main(int argc, char *argv[])
 {
-  os_runloop();
-}
-
-int main()
-{
-  setup();
-  while (1)
+  if (argc != 20)
   {
-    loop();
+    fprintf(stderr, "Usage: %s <DevAddr> <Nwkskey> <Appskey> <Value>\n", argv[0]);
+    exit(1);
   }
+
+  u1_t DevAddr[4];
+  u1_t Nwkskey[16];
+  u1_t Appskey[16];
+  int value;
+
+  sscanf(argv[1], "%2hhx%2hhx%2hhx%2hhx", &DevAddr[0], &DevAddr[1], &DevAddr[2], &DevAddr[3]);
+  for (int i = 0; i < 16; i++)
+    sscanf(argv[i + 2], "%2hhx", &Nwkskey[i]);
+  for (int i = 0; i < 16; i++)
+    sscanf(argv[i + 18], "%2hhx", &Appskey[i]);
+  sscanf(argv[34], "%d", &value);
+
+  setup(DevAddr, Nwkskey, Appskey, value);
+
+  // Run the loop once
+  os_runloop_once();
+
   return 0;
 }
 
