@@ -21,6 +21,25 @@
 #define STATUS_PIN_LED 2
 #define DATA_SENT_LED 3
 
+// Dummy functions
+void os_getArtEui(u1_t *buf)
+{
+  // Dummy implementation
+}
+
+void os_getDevEui(u1_t *buf)
+{
+  // Dummy implementation
+}
+
+void os_getDevKey(u1_t *buf)
+{
+  // Dummy implementation
+}
+
+// Convert u4_t in u1_t(array)
+#define msbf4_read(p) (u4_t)((u4_t)(p)[0] << 24 | (u4_t)(p)[1] << 16 | (p)[2] << 8 | (p)[3])
+
 static osjob_t sendjob;
 
 // Pin mapping
@@ -71,6 +90,7 @@ void onEvent(ev_t ev)
 
     // Turn off the DATA_SENT_LED after data is sent
     digitalWrite(DATA_SENT_LED, LOW);
+    exit(0); // Exit the program after data is sent
     break;
   default:
     fprintf(stdout, "Unknown event\n");
@@ -156,7 +176,7 @@ void setup(u1_t *DevAddr, u1_t *Nwkskey, u1_t *Appskey, int value)
 
 int main(int argc, char *argv[])
 {
-  if (argc != 20)
+  if (argc != 5)
   {
     fprintf(stderr, "Usage: %s <DevAddr> <Nwkskey> <Appskey> <Value>\n", argv[0]);
     exit(1);
@@ -169,15 +189,15 @@ int main(int argc, char *argv[])
 
   sscanf(argv[1], "%2hhx%2hhx%2hhx%2hhx", &DevAddr[0], &DevAddr[1], &DevAddr[2], &DevAddr[3]);
   for (int i = 0; i < 16; i++)
-    sscanf(argv[i + 2], "%2hhx", &Nwkskey[i]);
+    sscanf(&argv[2][i * 2], "%2hhx", &Nwkskey[i]);
   for (int i = 0; i < 16; i++)
-    sscanf(argv[i + 18], "%2hhx", &Appskey[i]);
-  sscanf(argv[34], "%d", &value);
+    sscanf(&argv[3][i * 2], "%2hhx", &Appskey[i]);
+  sscanf(argv[4], "%d", &value);
 
   setup(DevAddr, Nwkskey, Appskey, value);
 
   // Run the loop once
-  os_runloop_once();
+  os_runloop();
 
   return 0;
 }
