@@ -1,5 +1,3 @@
-// Inspired from https://github.com/fox-iot/lmic-rpi-fox
-
 #define DATA_RATE_UP_DOWN 2 // Spreading factor (DR0 - DR5)
 #define TX_POWER 20         // power option: 2, 5, 8, 11, 14 and 20
 #define SESSION_PORT 1      // Port session
@@ -20,6 +18,7 @@
 #define RFM95_PIN_D0 4
 #define RFM95_PIN_D1 5
 #define STATUS_PIN_LED 2
+#define DATA_SENT_LED 3
 
 // LoRaWAN end-device address (DevAddr)
 static const u1_t DevAddr[4] = {0xFC, 0x00, 0x96, 0xCC};
@@ -128,6 +127,9 @@ void onEvent(ev_t ev)
       }
       fprintf(stdout, "\n");
     }
+
+    // Turn off the DATA_SENT_LED after data is sent
+    digitalWrite(DATA_SENT_LED, LOW);
     break;
   default:
     fprintf(stdout, "Unknown event\n");
@@ -166,9 +168,7 @@ static void do_send(osjob_t *j)
   os_setTimedCallback(j, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
 
   // Blink LED to indicate end of transmission attempt
-  digitalWrite(STATUS_PIN_LED, HIGH);
-  delay(100);
-  digitalWrite(STATUS_PIN_LED, LOW);
+  digitalWrite(DATA_SENT_LED, HIGH);
 }
 
 PI_THREAD(blinkRun)
@@ -223,6 +223,7 @@ void setup()
 
   // Set pin direction
   pinMode(STATUS_PIN_LED, OUTPUT);
+  pinMode(DATA_SENT_LED, OUTPUT);
 
   // Add thread
   // piThreadCreate (blinkRun);
