@@ -61,6 +61,7 @@ $ ./ttn-abp-send
 
 ## How to run
 ```bash
+# LED flag (0/1) can be used as an indication for device activity and data sending
 ./ttn-abp-send <DevAddr> <Nwkskey> <Appskey> <Rain_mm> <LED_FLAG>
 ```
 
