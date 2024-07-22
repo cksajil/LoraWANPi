@@ -1,27 +1,11 @@
-/**************************************************************************
-  NODE LORAWAN AU915MHZ WITH RASPBERRY PI 3 + (RFM95-SX1276)
-***************************************************************************
-  AUTHOR: LUCAS MAZIERO - Electrical Engineer
-  EMAIL: lucas.mazie.ro@hotmail.com
-  CITY: Santa Maria - Rio Grande do Sul - Brasil
-  FOUNDATION: Fox IoT
-***************************************************************************
-  Version: 1.0
-  Date: 27/06/2018
-  Modified: --/--/----
-***************************************************************************
-  Copyright(c) by: Fox IoT.
-**************************************************************************/
-/**************************************************************************
-CONFIGURATION NODE LORA
-**************************************************************************/
+// Inspired from https://github.com/fox-iot/lmic-rpi-fox
+
 #define DATA_RATE_UP_DOWN 2 // Spreading factor (DR0 - DR5)
 #define TX_POWER 20         // power option: 2, 5, 8, 11, 14 and 20
 #define SESSION_PORT 1      // Port session
 
-/**************************************************************************
-  AUXILIARY LIBRARIES
-**************************************************************************/
+// AUXILIARY LIBRARIES
+
 #include <stdio.h>
 #include <time.h>
 #include <wiringPi.h>
@@ -29,16 +13,12 @@ CONFIGURATION NODE LORA
 #include <hal.h>
 #include <local_hal.h>
 
-/**************************************************************************
-  VARIABLES AND DEFINITIONS
-**************************************************************************/
+// VARIABLES AND DEFINITIONS
 // Module RFM95 pin mapping
 #define RFM95_PIN_NSS 6
 #define RFM95_PIN_RST 0
 #define RFM95_PIN_D0 4
 #define RFM95_PIN_D1 5
-// #define RFM95_PIN_D2 1
-
 #define STATUS_PIN_LED 2
 
 // LoRaWAN end-device address (DevAddr)
@@ -83,7 +63,7 @@ static const u1_t Appskey[16] = {
     0xA2,
     0x1C,
 };
-// Schedule TX every this many seconds (might become longer due to duty cycle limitations).
+// Schedule TX every this many seconds
 int TX_INTERVAL = 3;
 
 // Convert u4_t in u1_t(array)
@@ -162,7 +142,7 @@ static void do_send(osjob_t *j)
 
   // Blink LED to indicate transmission start
   digitalWrite(STATUS_PIN_LED, HIGH);
-  delay(100); // Adjust delay as needed for visibility
+  delay(100);
   digitalWrite(STATUS_PIN_LED, LOW);
 
   // Show TX channel (channel numbers are local to LMIC)
@@ -171,10 +151,10 @@ static void do_send(osjob_t *j)
   {
     fprintf(stdout, "OP_TXRXPEND, not sending");
   }
+
   else
   {
     // Prepare upstream data transmission at the next possible time.
-
     unsigned char buf[25];
     int r = 10;
     buf[0] = (r >> 8) & 0xFF;
@@ -187,7 +167,7 @@ static void do_send(osjob_t *j)
 
   // Blink LED to indicate end of transmission attempt
   digitalWrite(STATUS_PIN_LED, HIGH);
-  delay(100); // Adjust delay as needed for visibility
+  delay(100);
   digitalWrite(STATUS_PIN_LED, LOW);
 }
 
@@ -215,24 +195,13 @@ void setup()
 
   // Set static session parameters. Instead of dynamically establishing a session
   // by joining the network, precomputed session parameters are be provided.
-  LMIC_setSession(SESSION_PORT, msbf4_read((u1_t *)DevAddr), (u1_t *)Nwkskey, (u1_t *)Appskey); /*
-
- /*
-   // Multi channel AU915 (CH0-CH7)
-   // First, disable channels 0-7
-   for (int channel = 0; channel < 8; ++channel)
-     LMIC_disableChannel(channel);
-   // Now, disable channels 16-72 (is there 72 ??)
-   for (int channel = 16; channel < 72; ++channel)
-     LMIC_disableChannel(channel);
-   // This means only channels 8-15 are up
- */
+  LMIC_setSession(SESSION_PORT, msbf4_read((u1_t *)DevAddr), (u1_t *)Nwkskey, (u1_t *)Appskey);
 
   // Multi channel IN865 (CH0-CH7)
   // First, disable channels 8-72
   for (int channel = 8; channel < 72; ++channel)
     LMIC_disableChannel(channel);
-  // This means only channels 0-7 are up
+  // This means only Indian channels 0-7 are up
 
   // Disable data rate adaptation
   LMIC_setAdrMode(0);
