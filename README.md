@@ -1,7 +1,7 @@
 # LoRaWAN Raspberry Pi
  A Python wrapper for utilizing the LMIC library to transmit data from a Raspberry Pi 4 using the RFM95 module.
 
-This code is adapted and modified from [lmic-rpi-fox](https://github.com/fox-iot/lmic-rpi-fox). This library provides an interface between hardware and software, consisting of a LoRa chip [RFM95](http://www.hoperf.com/upload/rf/RFM95_96_97_98W.pdf) modified to operate at a frequency of 865 MHz and three indicator LEDs, one green indicating power on and two red general purpose ones that can be configured to indicate some type of system status. 
+This code is adapted and modified from [lmic-rpi-fox](https://github.com/fox-iot/lmic-rpi-fox). This library provides an interface between hardware and software, consisting of a LoRa chip [RFM95](http://www.hoperf.com/upload/rf/RFM95_96_97_98W.pdf) modified to operate at a frequency of 865 MHz and two indicator LEDs, one for indicating power on and the other for indicating data sending activity. 
 
 
 ## Setup 
@@ -43,20 +43,20 @@ $ ./ttn-abp-send
 ## Hardware mapping 
 
 The complete WiringPi pin mapping can be seen [here](https://raw.githubusercontent.com/cksajil/LoraWANPi/main/lmic_rpi/raspberry_pi_wiring_gpio_pins.png) 
-| WiringPi Pin | Function  |
-|--------------|-----------|
-| 0            | Reset     |
-| 4            | DIO0      |
-| 5            | DIO1      |
+| WiringPi Pin | Function        |
+|--------------|-----------------|
+| 0            | Reset           |
+| 4            | DIO0            |
+| 5            | DIO1            |
 | 1            | DIO2 (Not used) |
-| 12           | MOSI      |
-| 13           | MISO      |
-| 14           | SCK       |
-| 6            | SS        |
-| 2            | LED1      |
-| 3            | LED2      |
-| GND          | GND       |
-| 3.3V         | +3.3V     |
+| 12           | MOSI            |
+| 13           | MISO            |
+| 14           | SCK             |
+| 6            | SS              |
+| 2            | STATUS LED      |
+| 3            | DATE SENT LED   |
+| GND          | GND             |
+| 3.3V         | +3.3V           |
 
 
 ## License
