@@ -16,7 +16,7 @@
 CONFIGURATION NODE LORA
 **************************************************************************/
 #define DATA_RATE_UP_DOWN 2 // Spreading factor (DR0 - DR5)
-#define TX_POWER 14         // power option: 2, 5, 8, 11, 14 and 20
+#define TX_POWER 20         // power option: 2, 5, 8, 11, 14 and 20
 #define SESSION_PORT 1      // Port session
 
 /**************************************************************************
@@ -42,13 +42,47 @@ CONFIGURATION NODE LORA
 #define STATUS_PIN_LED 2
 
 // LoRaWAN end-device address (DevAddr)
-static const u1_t DevAddr[4] = {0xFC, 0x00, 0x96, 0x41};
+static const u1_t DevAddr[4] = {0xFC, 0x00, 0x96, 0xCC};
 
 // LoRaWAN NwkSKey, network session key
-static const u1_t Nwkskey[16] = {0x68, 0x9F, 0xAE, 0x57, 0xCF, 0x18, 0xF8, 0x1B, 0xD4, 0xE4, 0x50, 0x6C, 0x1E, 0x62, 0xDF, 0xB1};
+static const u1_t Nwkskey[16] = {
+    0x6A,
+    0x9D,
+    0x80,
+    0x15,
+    0x0E,
+    0x4E,
+    0xD6,
+    0xDA,
+    0xDA,
+    0x2B,
+    0x2C,
+    0xFD,
+    0x82,
+    0x2C,
+    0x63,
+    0x78,
+};
 
 // LoRaWAN AppSKey, application session key
-static const u1_t Appskey[16] = {0xE8, 0x94, 0xF7, 0x6F, 0xCF, 0xBE, 0xEC, 0xB1, 0x99, 0x83, 0x3C, 0x06, 0x1A, 0x7A, 0x54, 0x21};
+static const u1_t Appskey[16] = {
+    0x36,
+    0x19,
+    0x82,
+    0x23,
+    0x07,
+    0x29,
+    0x08,
+    0xDA,
+    0x7A,
+    0x6C,
+    0x09,
+    0x77,
+    0x11,
+    0x81,
+    0xA2,
+    0x1C,
+};
 // Schedule TX every this many seconds (might become longer due to duty cycle limitations).
 int TX_INTERVAL = 3;
 
@@ -140,16 +174,12 @@ static void do_send(osjob_t *j)
   else
   {
     // Prepare upstream data transmission at the next possible time.
-    char buf[25];
-    sprintf(buf, "Hello world! [%d]", cntr++);
-    int i = 0;
-    while (buf[i])
-    {
-      mydata[i] = buf[i];
-      i++;
-    }
-    mydata[i] = '\0';
-    LMIC_setTxData2(1, mydata, strlen(buf), 0);
+
+    unsigned char buf[25];
+    int r = 10;
+    buf[0] = (r >> 8) & 0xFF;
+    buf[1] = r & 0xFF;
+    LMIC_setTxData2(1, buf, 2, 0);
   }
 
   // Schedule a timed job to run at the given timestamp (absolute system time)
@@ -249,14 +279,9 @@ int main()
 
 // TTN decode payload
 /*
-function Decoder(bytes, port)
-{
-  var result = "";
-  for (var i = 0; i < bytes.length; i++)
-  {
-    result += (String.fromCharCode(bytes[i]));
-  }
-
-  return {payload: result};
+function Decode(fPort, bytes, variables) {
+  var decoded = {};
+  decoded.rain=((bytes[0]<<8) + bytes[1]);
+  return decoded;
 }
 */

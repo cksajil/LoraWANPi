@@ -57,12 +57,6 @@ enum
 {
     DR_PAGE_EU868 = 0x00
 };
-
-enum
-{
-    DR_PAGE_IN865 = 0x10
-};
-
 enum
 {
     DR_PAGE_US915 = 0x10
@@ -300,18 +294,47 @@ enum
 // Default frequency plan for AU 915MHz
 enum
 {
-    US915_125kHz_UPFBASE = 915200000,
+    US915_125kHz_UPFBASE = 865062500,
     US915_125kHz_UPFSTEP = 200000,
-    US915_500kHz_UPFBASE = 915900000,
+    US915_500kHz_UPFBASE = 865500000,
     US915_500kHz_UPFSTEP = 1600000,
-    US915_500kHz_DNFBASE = 923300000,
+    US915_500kHz_DNFBASE = 866550000,
     US915_500kHz_DNFSTEP = 600000
 };
 enum
 {
-    US915_FREQ_MIN = 915200000,
-    US915_FREQ_MAX = 927800000
+    US915_FREQ_MIN = 865000000,
+    US915_FREQ_MAX = 867000000
 };
+
+// enum
+// {
+//     US915_125kHz_UPFBASE = 915200000,
+//     US915_125kHz_UPFSTEP = 200000,
+//     US915_500kHz_UPFBASE = 915900000,
+//     US915_500kHz_UPFSTEP = 1600000,
+//     US915_500kHz_DNFBASE = 923300000,
+//     US915_500kHz_DNFSTEP = 600000
+// };
+// enum
+// {
+//     US915_FREQ_MIN = 915200000,
+//     US915_FREQ_MAX = 927800000
+// };
+
+// #if defined(CFG_in865)
+// // Default frequency plan for IN 865MHz
+// enum { IN865_125kHz_UPFBASE = 865062500,
+//        IN865_125kHz_UPFSTEP =    200000,
+//        IN865_500kHz_UPFBASE = 865500000,
+//        IN865_500kHz_UPFSTEP =   1600000,
+//        IN865_500kHz_DNFBASE = 866550000,
+//        IN865_500kHz_DNFSTEP =    600000
+// };
+// enum { IN865_FREQ_MIN = 865000000,
+//        IN865_FREQ_MAX = 867000000 };
+// #endif
+
 #else // (CFG_au915)
 // Default frequency plan for US 915MHz
 enum
@@ -379,107 +402,6 @@ enum
     OFF_BCN_RFU1 = 16,
     OFF_BCN_CRC2 = 17,
     LEN_BCN = 19
-};
-
-#elif defined(CFG_in865) // =========================================
-
-enum _dr_in865_t
-{
-    DR_SF12 = 0,
-    DR_SF11,
-    DR_SF10,
-    DR_SF9,
-    DR_SF8,
-    DR_SF7,
-    DR_SF7B,
-    DR_FSK,
-    DR_NONE
-};
-enum
-{
-    DR_DFLTMIN = DR_SF7
-};
-enum
-{
-    DR_PAGE = DR_PAGE_IN865
-};
-
-// Default frequency plan for IN 865MHz ISM band
-// Bands:
-//  g1 :   1%  14dBm
-//  g2 : 0.1%  14dBm
-//  g3 :  10%  27dBm
-//                 freq             band     datarates
-enum
-{
-    IN865_F1 = 865062500, // g1   SF7-12
-    IN865_F2 = 865402500, // g1   SF7-12 FSK SF7/250
-    IN865_F3 = 865985000, // g1   SF7-12
-    IN865_F4 = 866550000, // g2   SF7-12
-    IN865_F5 = 866935000, // g2   SF7-12
-    IN865_F6 = 867337500, // g3   SF7-12
-    IN865_J4 = 864100000, // g2   SF7-12  used during join
-    IN865_J5 = 864300000, // g2   SF7-12   ditto
-    IN865_J6 = 864500000, // g2   SF7-12   ditto
-};
-enum
-{
-    IN865_FREQ_MIN = 865000000,
-    IN865_FREQ_MAX = 867000000
-};
-
-enum
-{
-    CHNL_PING = 5
-};
-enum
-{
-    FREQ_PING = IN865_F6
-}; // default ping freq
-enum
-{
-    DR_PING = DR_SF9
-}; // default ping DR
-enum
-{
-    CHNL_DNW2 = 5
-};
-enum
-{
-    FREQ_DNW2 = IN865_F6
-};
-enum
-{
-    DR_DNW2 = DR_SF12
-};
-enum
-{
-    CHNL_BCN = 5
-};
-enum
-{
-    FREQ_BCN = IN865_F6
-};
-enum
-{
-    DR_BCN = DR_SF9
-};
-enum
-{
-    AIRTIME_BCN = 144384
-}; // micros
-
-enum
-{
-    // Beacon frame format IN SF9
-    OFF_BCN_NETID = 0,
-    OFF_BCN_TIME = 3,
-    OFF_BCN_CRC1 = 7,
-    OFF_BCN_INFO = 8,
-    OFF_BCN_LAT = 9,
-    OFF_BCN_LON = 12,
-    OFF_BCN_CRC2 = 15,
-    LEN_BCN = 17
 };
 
 #endif // ===================================================
