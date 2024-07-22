@@ -10,36 +10,6 @@ This code is adapted and modified from [lmic-rpi-fox](https://github.com/fox-iot
 - Install the Raspbian operating system on the Raspberry Pi, which can be installed via Imager/Baleno Etcher
 - Enable the SPI interface in preferences => Raspberrry pi configuration => interfaces 
 
-## Install the WiringPi library 
-
-The [WiringPi](https://github.com/WiringPi/WiringPi) library provides the Raspberry Pi GPIO interface. Follow the instructions in that repository or do the following.
-
-```bash
-# Clone the repository 
-$ git clone https://github.com/WiringPi/WiringPi.git 
-
-# Access the wiringPi folder 
-$ cd wiringPi 
-
-# Build the library
-$ ./build 
-```
-## Compile [LoraWANPi](https://github.com/lucasmaziero/lmic-rpi-fox.git) 
-
-```bash
-# Clone the repository 
-$ git clone https://github.com/cksajil/LoraWANPi.git 
-
-# Access the lmic_rpi folder 
-$ cd lmic_rpi/examples/ttn-abp-send 
-
-# Make the project 
-$ make 
-
-# Running the program 
-$ ./ttn-abp-send 
-```
-
 ## Hardware mapping 
 
 The complete WiringPi pin mapping can be seen [here](https://raw.githubusercontent.com/cksajil/LoraWANPi/main/lmic_rpi/raspberry_pi_wiring_gpio_pins.png) 
@@ -57,6 +27,42 @@ The complete WiringPi pin mapping can be seen [here](https://raw.githubuserconte
 | 3            | DATE SENT LED   |
 | GND          | GND             |
 | 3.3V         | +3.3V           |
+
+## Install the WiringPi library 
+
+The [WiringPi](https://github.com/WiringPi/WiringPi) library provides the Raspberry Pi GPIO interface. Follow the instructions in that repository or do the following.
+
+```bash
+# Clone the repository 
+$ git clone https://github.com/WiringPi/WiringPi.git 
+
+# Access the wiringPi folder 
+$ cd wiringPi 
+
+# Build the library
+$ ./build 
+```
+
+## Compile [LoraWANPi](https://github.com/lucasmaziero/lmic-rpi-fox.git) 
+
+```bash
+# Clone the repository 
+$ git clone https://github.com/cksajil/LoraWANPi.git 
+
+# Access the lmic_rpi folder 
+$ cd lmic_rpi/examples/ttn-abp-send 
+
+# Make the project 
+$ make 
+
+# Running the program 
+$ ./ttn-abp-send 
+```
+
+## How to run
+```bash
+./ttn-abp-send <DevAddr> <Nwkskey> <Appskey> <Value>
+```
 
 
 ## License
