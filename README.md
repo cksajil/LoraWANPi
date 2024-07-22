@@ -61,7 +61,7 @@ $ ./ttn-abp-send
 
 ## How to run
 ```bash
-./ttn-abp-send <DevAddr> <Nwkskey> <Appskey> <Value>
+./ttn-abp-send <DevAddr> <Nwkskey> <Appskey> <Rain_mm> <LED_FLAG>
 ```
 
 

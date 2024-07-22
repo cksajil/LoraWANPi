@@ -21,26 +21,17 @@
 #define STATUS_PIN_LED 2
 #define DATA_SENT_LED 3
 
-// Dummy functions
-void os_getArtEui(u1_t *buf)
-{
-  // Dummy implementation
-}
-
-void os_getDevEui(u1_t *buf)
-{
-  // Dummy implementation
-}
-
-void os_getDevKey(u1_t *buf)
-{
-  // Dummy implementation
-}
+// Dummy definitions to satisfy linker
+void os_getArtEui(u1_t *buf) {}
+void os_getDevEui(u1_t *buf) {}
+void os_getDevKey(u1_t *buf) {}
 
 // Convert u4_t in u1_t(array)
 #define msbf4_read(p) (u4_t)((u4_t)(p)[0] << 24 | (u4_t)(p)[1] << 16 | (p)[2] << 8 | (p)[3])
 
 static osjob_t sendjob;
+
+int useLeds = 1; // Default to using LEDs
 
 // Pin mapping
 lmic_pinmap pins =
@@ -71,7 +62,6 @@ void onEvent(ev_t ev)
     // Check DOWN
     if (LMIC.dataLen)
     {
-
       fprintf(stdout, "RSSI: ");
       fprintf(stdout, "%ld", LMIC.rssi - 96);
       fprintf(stdout, " dBm\n");
@@ -88,8 +78,10 @@ void onEvent(ev_t ev)
       fprintf(stdout, "\n");
     }
 
-    // Turn off the DATA_SENT_LED after data is sent
-    digitalWrite(DATA_SENT_LED, LOW);
+    // Turn off the DATA_SENT_LED after data is sent if LEDs are enabled
+    if (useLeds)
+      digitalWrite(DATA_SENT_LED, LOW);
+
     exit(0); // Exit the program after data is sent
     break;
   default:
@@ -98,15 +90,18 @@ void onEvent(ev_t ev)
   }
 }
 
-static void do_send(osjob_t *j, int value)
+static void do_send(osjob_t *j, float rain)
 {
   time_t t = time(NULL);
   fprintf(stdout, "[%x] (%ld) %s\n", hal_ticks(), t, ctime(&t));
 
-  // Blink LED to indicate transmission start
-  digitalWrite(STATUS_PIN_LED, HIGH);
-  delay(100);
-  digitalWrite(STATUS_PIN_LED, LOW);
+  // Blink LED to indicate transmission start if LEDs are enabled
+  if (useLeds)
+  {
+    digitalWrite(STATUS_PIN_LED, HIGH);
+    delay(100);
+    digitalWrite(STATUS_PIN_LED, LOW);
+  }
 
   // Show TX channel (channel numbers are local to LMIC)
   // Check if there is not a current TX/RX job running
@@ -116,18 +111,22 @@ static void do_send(osjob_t *j, int value)
   }
   else
   {
+    // Convert float to fixed-point integer representation
+    int int_rain = (int)(rain * 100);
+
     // Prepare upstream data transmission at the next possible time.
-    unsigned char buf[25];
-    buf[0] = (value >> 8) & 0xFF;
-    buf[1] = value & 0xFF;
+    unsigned char buf[2];
+    buf[0] = (int_rain >> 8) & 0xFF;
+    buf[1] = int_rain & 0xFF;
     LMIC_setTxData2(1, buf, 2, 0);
   }
 
-  // Blink LED to indicate end of transmission attempt
-  digitalWrite(DATA_SENT_LED, HIGH);
+  // Blink LED to indicate end of transmission attempt if LEDs are enabled
+  if (useLeds)
+    digitalWrite(DATA_SENT_LED, HIGH);
 }
 
-void setup(u1_t *DevAddr, u1_t *Nwkskey, u1_t *Appskey, int value)
+void setup(u1_t *DevAddr, u1_t *Nwkskey, u1_t *Appskey, float rain)
 {
   // wiringPi init
   wiringPiSetup();
@@ -166,35 +165,39 @@ void setup(u1_t *DevAddr, u1_t *Nwkskey, u1_t *Appskey, int value)
   // Set data rate and transmit power (note: txpow seems to be ignored by the library)
   LMIC_setDrTxpow(DATA_RATE_UP_DOWN, TX_POWER);
 
-  // Set pin direction
-  pinMode(STATUS_PIN_LED, OUTPUT);
-  pinMode(DATA_SENT_LED, OUTPUT);
+  // Set pin direction if LEDs are enabled
+  if (useLeds)
+  {
+    pinMode(STATUS_PIN_LED, OUTPUT);
+    pinMode(DATA_SENT_LED, OUTPUT);
+  }
 
   // Send data once
-  do_send(&sendjob, value);
+  do_send(&sendjob, rain);
 }
 
 int main(int argc, char *argv[])
 {
-  if (argc != 5)
+  if (argc != 6)
   {
-    fprintf(stderr, "Usage: %s <DevAddr> <Nwkskey> <Appskey> <Value>\n", argv[0]);
+    fprintf(stderr, "Usage: %s <DevAddr> <Nwkskey> <Appskey> <Rain> <UseLeds>\n", argv[0]);
     exit(1);
   }
 
   u1_t DevAddr[4];
   u1_t Nwkskey[16];
   u1_t Appskey[16];
-  int value;
+  float rain;
 
   sscanf(argv[1], "%2hhx%2hhx%2hhx%2hhx", &DevAddr[0], &DevAddr[1], &DevAddr[2], &DevAddr[3]);
   for (int i = 0; i < 16; i++)
     sscanf(&argv[2][i * 2], "%2hhx", &Nwkskey[i]);
   for (int i = 0; i < 16; i++)
     sscanf(&argv[3][i * 2], "%2hhx", &Appskey[i]);
-  sscanf(argv[4], "%d", &value);
+  sscanf(argv[4], "%f", &rain);
+  sscanf(argv[5], "%d", &useLeds);
 
-  setup(DevAddr, Nwkskey, Appskey, value);
+  setup(DevAddr, Nwkskey, Appskey, rain);
 
   // Run the loop once
   os_runloop();
@@ -206,7 +209,7 @@ int main(int argc, char *argv[])
 /*
 function Decode(fPort, bytes, variables) {
   var decoded = {};
-  decoded.rain=((bytes[0]<<8) + bytes[1]);
+  decoded.rain = ((bytes[0] << 8) | bytes[1]) / 100.0;
   return decoded;
 }
 */
