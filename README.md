@@ -1,6 +1,8 @@
 # LoRaWAN Raspberry Pi
  A Python wrapper for utilizing the LMIC library to transmit data from a Raspberry Pi 4 using the RFM95 module.
 
+It sends the rainfall readings of the [Acoustic Rain Gauge](https://github.com/cksajil/rainfall_monitor) over LoRaWAN (865 MHz, ABP activation) to The Things Network, but works for any small sensor payload.
+
 This code is adapted and modified from [lmic-rpi-fox](https://github.com/fox-iot/lmic-rpi-fox). This library provides an interface between hardware and software, consisting of a LoRa chip [RFM95](http://www.hoperf.com/upload/rf/RFM95_96_97_98W.pdf) modified to operate at a frequency of 865 MHz and two indicator LEDs, one for indicating power on and the other for indicating data sending activity. 
 
 
@@ -8,7 +10,7 @@ This code is adapted and modified from [lmic-rpi-fox](https://github.com/fox-iot
 
 - Format the SD card with [SD Memory Card Formatter](https://www.sdcard.org/downloads/formatter_4/) 
 - Install the Raspbian operating system on the Raspberry Pi, which can be installed via Imager/Baleno Etcher
-- Enable the SPI interface in preferences => Raspberrry pi configuration => interfaces 
+- Enable the SPI interface in preferences => Raspberry Pi configuration => interfaces 
 
 ## Hardware mapping 
 
@@ -24,7 +26,7 @@ The complete WiringPi pin mapping can be seen [here](https://raw.githubuserconte
 | 14           | SCK             |
 | 6            | SS              |
 | 2            | STATUS LED      |
-| 3            | DATE SENT LED   |
+| 3            | DATA SENT LED   |
 | GND          | GND             |
 | 3.3V         | +3.3V           |
 
